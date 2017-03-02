@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <style>
+       body, div, ul, li ,p{
+            margin:0; padding:0;
+        }
+        ul{
+            list-style:none;
+        }
+        #compute{
+            width:485px;
+            height:470px;
+            border-radius:10px;
+            background:#373538;
+            margin:50px auto;
+            box-shadow:0 0 5px #000;
+            color:#fff;
+            padding:15px 30px;
+            font-family:"Microsoft YaHei";
+        }
+        .title{
+            margin-bottom:15px;
+            font-size:18px;
+            text-indent:5px;
+        }
+        .show{
+            height:50px;
+            border-radius:5px;
+            background:#f5eece;
+            margin-bottom:30px;
+            text-align:right;
+            color:#000;
+            font-size:45px;
+            line-height:50px;
+            overflow:hidden;
+        }
+        .operate{
+            margin:5px;
+            margin-right:-19px;
+        }
+        .operate li{
+            width:80px;
+            height:60px;
+            background:#212121;
+            box-shadow:0 0 5px #fff;
+            border-radius:5px;
+            text-align:center;
+            line-height:60px;
+            font-size:20px;
+            float:left;
+            margin:0 19px 19px 0;
+            cursor:pointer;
+        }
+        .operate .red{
+            background:#d17070;
+        }
+        .operate .yellow{
+            background:#e0c671;
+        }
+        #dd{height:100vh;background:red;}
+    </style>
+</head>
+<body id="kk">
+    <div id="compute">
+        <p class='title'>计算机</p>
+        <div class="show"></div>
+        <ul class="operate">
+            <li class="digit">7</li>
+            <li class="digit">8</li>
+            <li class="digit">9</li>
+            <li class='red retreat'>←</li>
+            <li class='red reset'>C</li>
+            <li class="digit">4</li>
+            <li class="digit">5</li>
+            <li class="digit">6</li>
+            <li class='red operateSign'>*</li>
+            <li class='red operateSign'>/</li>
+            <li class="digit">3</li>
+            <li class="digit">2</li>
+            <li class="digit">1</li>
+            <li class='red operateSign'>+</li>
+            <li class='red operateSign'>-</li>
+            <li class="digit">0</li>
+            <li class="digit">00</li>
+            <li class="digit">.</li>
+            <li class='red operateSign'>%</li>
+            <li class="yellow equal">=</li>
+        </ul>
+        <p>欢迎使用中国科技有限公司-计算机</p>
+    </div>
+    <div id="dd">一屏的高度</div>
+ 
+    <script src="js/jquery-1-11-1.js"></script>
+    <script>
+        ; (function () {
+            var digit = $(".digit"),
+                show = $(".show").text(""), 
+                retreat = $(".retreat"),
+                    reset = $(".reset"),
+                    operateSign = $(".operateSign"),
+                        equal = $(".equal"),
+                        isequal = false,//是否点击了等于
+                        lastIndex = 0;
+            //点击 0-9 和 .
+            digit.on("click", function () {
+               
+                var disgit2 = show.text(),
+                    disgit3 = this.innerText;
+                isequal ? disgit2 = "" : disgit2;
+                isequal = false;
+                if (disgit2 == '0' || disgit2 == "")
+                {
+                    if (disgit2 == "" && disgit3 == ".") return;
+                    if (disgit2 == "0" && disgit3 == ".") disgit3="0.";
+                    if (disgit3 == "00") disgit3 = "0";
+                    show.text(disgit3);
+                    return;
+                };
+            
+                if (/[-/*/+///]$/.test(disgit2)) {
+                    lastIndex=disgit2.length-1;
+                    if (disgit3 == ".") return;
+                    if (disgit3 === "00") disgit3 = "0"; 
+                } else {
+                    var data = disgit2.slice(lastIndex);
+                    if (/^[-/*/+///]/.test(data) && data[1]=="0"&& data.length<3 && disgit3 != ".") { 
+                        return;
+                    }
+                };
+                if (disgit3 == "." && disgit2.slice(lastIndex).indexOf(".") != -1) return;
+                show.text(disgit2 + disgit3);
+            });
+            //点击后退
+            retreat.on("click", function () {
+                var showDigit = show.text();
+                if (showDigit == "") return;
+                show.text(showDigit.slice(0, -1));
+            });
+            //点击重置
+            reset.on("click", function () {
+                show.text("");
+            });
+            //点击 + - * / %
+            operateSign.on("click", function () {
+                var thisData = show.text();
+                if (/[-/*/+///]$/.test(thisData)) return;
+                if (thisData === "" && /^[+/*/%///]/.test(this.innerText)) return;
+                if (thisData !== "" && this.innerText == "%" && !/[-/*/+///]/.test(thisData.slice(1))) {
+                    show.text(parseFloat(thisData) / 100);
+                    isequal = true;
+                    return;
+                }
+                if (this.innerText == "%")return;
+                show.text(thisData + this.innerText);
+            });
+            //点击 =
+            equal.on("click", function () {
+                isequal = true;
+                result(show.text());
+            })
+            
+            function result(data) {
+                var s1 = parseFloat(data),
+                    s2 = data.slice((s1 + "").length);
+                show.text(eval('(' + data + ')'));
+            }
+        })();
+    </script>
+</body>
+</html>
